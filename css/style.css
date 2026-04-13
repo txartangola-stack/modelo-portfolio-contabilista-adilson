@@ -1,0 +1,113 @@
+/* Defaults & Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+html {
+    scroll-behavior: smooth;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #f8fafc; /* Slate 50 */
+    color: #1e293b; /* Slate 800 */
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9; 
+}
+::-webkit-scrollbar-thumb {
+    background: #94a3b8; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #475569; 
+}
+
+/* Micro-interações e Classes de Animação para IntersectionObserver */
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    transform: translateY(20px);
+}
+
+.fade-in.appear {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Delay modifiers for staggered animations */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+
+/* Timeline UI styling */
+.timeline-container {
+    position: relative;
+    padding-left: 2rem;
+}
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e2e8f0; /* slate-200 */
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.35rem; /* Ajustado para alinhar com a linha */
+    top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    background-color: #0ea5e9; /* sky-500 */
+    border: 3px solid #fff;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+/* Progress bar animation */
+.skill-bar-fill {
+    width: 0;
+    transition: width 1.5s ease-out;
+}
+
+/* Hero Section Background Overlay */
+.hero-bg {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); /* slate-900 to slate-800 */
+    position: relative;
+    overflow: hidden;
+}
+.hero-bg::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.5" fill="rgba(255,255,255,0.05)"/></svg>');
+    opacity: 0.5;
+    z-index: 0;
+}
+.hero-content {
+    position: relative;
+    z-index: 10;
+}
+
+/* Lightbox Modal para Galeria */
+#lightbox-modal {
+    transition: opacity 0.3s ease;
+}
+#lightbox-modal:not(.hidden) {
+    display: flex;
+}
+#lightbox-img {
+    max-height: 80vh;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
