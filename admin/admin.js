@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadAllData() {
         // Garantir que existe info
-        if (!localStorage.getItem("portfolio_profile") && window.initDatabase) window.initDatabase();
+        if (window.initDatabase) window.initDatabase();
 
         loadProfile();
         loadServices();
@@ -420,7 +420,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 experiences: localStorage.getItem('portfolio_experiences'),
                 skills: localStorage.getItem('portfolio_skills'),
                 certifications: localStorage.getItem('portfolio_certifications'),
-                testimonials: localStorage.getItem('portfolio_testimonials')
+                testimonials: localStorage.getItem('portfolio_testimonials'),
+                lastUpdated: Date.now()
             };
 
             // 2. Construir o conteúdo do ficheiro js/data.js baseado no localStorage atual
@@ -431,11 +432,16 @@ document.addEventListener('DOMContentLoaded', () => {
     experiences: ${snapshot.experiences},
     skills: ${snapshot.skills},
     certifications: ${snapshot.certifications},
-    testimonials: ${snapshot.testimonials}
+    testimonials: ${snapshot.testimonials},
+    lastUpdated: ${snapshot.lastUpdated}
 };
 
 function initDatabase() {
-    if (!localStorage.getItem("portfolio_profile")) {
+    const localLastUpdated = localStorage.getItem("portfolio_last_updated") || "0";
+    const remoteLastUpdated = (defaultData.lastUpdated || 0).toString();
+
+    if (!localStorage.getItem("portfolio_profile") || parseInt(remoteLastUpdated) > parseInt(localLastUpdated)) {
+        console.log("Sincronizando com a versão mais recente do GitHub...");
         localStorage.setItem("portfolio_profile", JSON.stringify(defaultData.profile));
         localStorage.setItem("portfolio_services", JSON.stringify(defaultData.services));
         localStorage.setItem("portfolio_educations", JSON.stringify(defaultData.educations));
@@ -443,6 +449,11 @@ function initDatabase() {
         localStorage.setItem("portfolio_skills", JSON.stringify(defaultData.skills));
         localStorage.setItem("portfolio_certifications", JSON.stringify(defaultData.certifications));
         localStorage.setItem("portfolio_testimonials", JSON.stringify(defaultData.testimonials));
+        localStorage.setItem("portfolio_last_updated", remoteLastUpdated);
+        
+        if (localLastUpdated !== "0") {
+            setTimeout(() => window.location.reload(), 500);
+        }
     }
 }
 window.initDatabase = initDatabase;`;
