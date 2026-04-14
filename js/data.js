@@ -6,7 +6,15 @@ profile: {"name":"Adilson Fula","title":"Estudante de Contabilidade","tagline":"
     skills: {"technical":[{"name":"Análise Financeira","level":90},{"name":"Gestão Fiscal","level":95},{"name":"Contabilidade Empresarial","level":100},{"name":"Softwares ERP (Primavera, SAP)","level":85}],"soft":[{"name":"Organização","level":100},{"name":"Atenção ao Detalhe","level":95},{"name":"Ética e Sigilo","level":100},{"name":"Comunicação","level":90}]},
     certifications: [{"id":1,"name":"Membro da Ordem dos Contabilistas Certificados"},{"id":2,"name":"Consultor de Gestão Acreditado"}],
     testimonials: [{"id":1,"name":"Maria Fernandes","role":"CEO, TechStart","text":"Graças ao apoio do João, conseguimos otimizar a nossa carga fiscal em 20%. Serviço de excelência!"},{"id":2,"name":"Carlos Pereira","role":"Sócio-Gerente, Comercio Local Lda","text":"Sempre disponível e muito rigoroso nos prazos da Segurança Social e Finanças. Recomendo vivamente."}],
-    "lastUpdated": 1776194604597
+    "lastUpdated": 1776194604597,
+    events: [
+        {
+            "id": 1,
+            "title": "Palestra sobre Reforma Fiscal",
+            "caption": "Apresentação realizada no auditório municipal para pequenos empresários.",
+            "photo": "https://images.unsplash.com/photo-1475721027785-f74dea99995f?w=800&fit=crop"
+        }
+    ]
 };
 
 function initDatabase() {
@@ -23,6 +31,7 @@ function initDatabase() {
         localStorage.setItem("portfolio_skills", JSON.stringify(defaultData.skills));
         localStorage.setItem("portfolio_certifications", JSON.stringify(defaultData.certifications));
         localStorage.setItem("portfolio_testimonials", JSON.stringify(defaultData.testimonials));
+        localStorage.setItem("portfolio_events", JSON.stringify(defaultData.events || []));
         localStorage.setItem("portfolio_last_updated", remoteLastUpdated);
         
         // Se não for a primeira carga (ou seja, se já existia algo mas era antigo), recarrega a página

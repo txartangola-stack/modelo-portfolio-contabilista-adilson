@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadExperience();
         loadEducation();
         loadSkills();
+        loadEvents();
         loadGithubSettings();
     }
 
@@ -176,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadServices() {
         const serv = JSON.parse(localStorage.getItem('portfolio_services') || '[]');
         const tbody = document.getElementById('services-tbody');
+        if (!tbody) return;
         tbody.innerHTML = serv.map(s => `
             <tr class="border-b border-slate-100 hover:bg-slate-50">
                 <td class="p-3 align-top font-medium">${s.title}</td>
@@ -200,6 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderExperienceList() {
         const listEl = document.getElementById('exp-list');
+        if (!listEl) return;
         listEl.innerHTML = allExperiences.map(e => `
             <div class="border border-slate-200 p-4 rounded bg-slate-50 flex justify-between items-center group hover:border-blue-300">
                 <div>
@@ -270,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gallery Logic
     let tempGalleryBase64 = null;
-    document.getElementById('exp-gallery-upload').addEventListener('change', function (e) {
+    document.getElementById('exp-gallery-upload') && document.getElementById('exp-gallery-upload').addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
@@ -280,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
     });
 
-    document.getElementById('btn-add-gallery').addEventListener('click', () => {
+    document.getElementById('btn-add-gallery') && document.getElementById('btn-add-gallery').addEventListener('click', () => {
         if (!tempGalleryBase64) {
             alert('Por favor, selecione uma imagem primeiro.');
             return;
@@ -301,6 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderExpGallery() {
         const container = document.getElementById('exp-gallery-preview');
+        if (!container) return;
         container.innerHTML = currentExpGallery.map((gi, idx) => `
             <div class="relative group border rounded overflow-hidden">
                 <img src="${gi.imgBase64}" class="w-full h-24 object-cover" alt="Galeria">
@@ -323,7 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadEducation() {
         const edu = JSON.parse(localStorage.getItem('portfolio_educations') || '[]');
-        document.getElementById('edu-list').innerHTML = edu.map(e => `
+        const listEl = document.getElementById('edu-list');
+        if (!listEl) return;
+        listEl.innerHTML = edu.map(e => `
             <div class="border border-slate-200 p-4 rounded bg-slate-50 flex justify-between">
                 <div><div class="font-medium">${e.course}</div><div class="text-sm text-slate-500">${e.institution} | ${e.year}</div></div>
                 <button class="text-slate-400 hover:text-blue-500"><i data-lucide="edit" class="w-5 h-5"></i></button>
@@ -332,10 +338,184 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     }
 
+    // --- SKILLS LOGIC ---
+    let allSkills = { technical: [], soft: [] };
+
     function loadSkills() {
-        const sk = JSON.parse(localStorage.getItem('portfolio_skills') || '{"technical":[],"soft":[]}');
-        document.getElementById('skills-tech-ul').innerHTML = sk.technical.map(s => `<li>${s.name} <span class="text-slate-400">(${s.level}%)</span></li>`).join('');
-        document.getElementById('skills-soft-ul').innerHTML = sk.soft.map(s => `<li>${s.name} <span class="text-slate-400">(${s.level}%)</span></li>`).join('');
+        allSkills = JSON.parse(localStorage.getItem('portfolio_skills') || '{"technical":[],"soft":[]}');
+        renderSkills();
+    }
+
+    function renderSkills() {
+        const techList = document.getElementById('skills-tech-list');
+        const softList = document.getElementById('skills-soft-list');
+        if (!techList || !softList) return;
+
+        const renderItem = (s, type) => `
+            <div class="flex justify-between items-center bg-slate-50 p-2 rounded border border-slate-100 group">
+                <div class="flex-1">
+                    <span class="text-sm font-medium">${s.name}</span>
+                    <span class="text-xs text-slate-400 ml-2">(${s.level}%)</span>
+                </div>
+                <button type="button" class="text-slate-300 hover:text-red-500 transition-colors btn-del-skill" data-name="${s.name}" data-type="${type}">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+        `;
+
+        techList.innerHTML = allSkills.technical.map(s => renderItem(s, 'technical')).join('');
+        softList.innerHTML = allSkills.soft.map(s => renderItem(s, 'soft')).join('');
+        lucide.createIcons();
+
+        document.querySelectorAll('.btn-del-skill').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const name = e.currentTarget.getAttribute('data-name');
+                const type = e.currentTarget.getAttribute('data-type');
+                deleteSkill(name, type);
+            });
+        });
+    }
+
+    document.getElementById('btn-add-skill').addEventListener('click', () => {
+        const name = document.getElementById('skill-name').value.trim();
+        const type = document.getElementById('skill-type').value;
+        const level = parseInt(document.getElementById('skill-level').value) || 50;
+
+        if (!name) {
+            alert('Por favor, insira o nome da competência.');
+            return;
+        }
+
+        allSkills[type].push({ name, level });
+        localStorage.setItem('portfolio_skills', JSON.stringify(allSkills));
+        
+        document.getElementById('skill-name').value = '';
+        document.getElementById('skill-level').value = '';
+        
+        showToast('Competência adicionada!');
+        renderSkills();
+    });
+
+    function deleteSkill(name, type) {
+        if (confirm(`Remover "${name}"?`)) {
+            allSkills[type] = allSkills[type].filter(s => s.name !== name);
+            localStorage.setItem('portfolio_skills', JSON.stringify(allSkills));
+            renderSkills();
+        }
+    }
+
+    // --- EVENTS LOGIC ---
+    let allEvents = [];
+
+    function loadEvents() {
+        allEvents = JSON.parse(localStorage.getItem('portfolio_events') || '[]');
+        renderEvents();
+    }
+
+    function renderEvents() {
+        const grid = document.getElementById('events-grid');
+        if (!grid) return;
+
+        grid.innerHTML = allEvents.map(ev => `
+            <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow group">
+                <div class="aspect-video bg-slate-100 relative">
+                    <img src="${ev.photo || ''}" class="w-full h-full object-cover ${!ev.photo ? 'hidden' : ''}">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                        <button type="button" class="bg-white text-slate-800 p-2 rounded-full hover:bg-emerald-50 btn-edit-event" data-id="${ev.id}"><i data-lucide="edit-3" class="w-5 h-5"></i></button>
+                        <button type="button" class="bg-white text-red-600 p-2 rounded-full hover:bg-red-50 btn-del-event" data-id="${ev.id}"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h5 class="font-bold text-slate-800 truncate">${ev.title}</h5>
+                    <p class="text-xs text-slate-500 line-clamp-2 mt-1">${ev.caption}</p>
+                </div>
+            </div>
+        `).join('');
+        lucide.createIcons();
+
+        document.querySelectorAll('.btn-edit-event').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                openEventEditor(id);
+            });
+        });
+
+        document.querySelectorAll('.btn-del-event').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                deleteEvent(id);
+            });
+        });
+    }
+
+    function openEventEditor(id = null) {
+        const form = document.getElementById('form-event');
+        form.reset();
+        document.getElementById('event-photo-preview').classList.add('hidden');
+
+        if (id) {
+            const ev = allEvents.find(x => x.id === id);
+            if (ev) {
+                document.getElementById('event-id').value = ev.id;
+                document.getElementById('event-title').value = ev.title;
+                document.getElementById('event-caption').value = ev.caption;
+                if (ev.photo) {
+                    document.getElementById('event-photo-preview').src = ev.photo;
+                    document.getElementById('event-photo-preview').classList.remove('hidden');
+                }
+            }
+        } else {
+             document.getElementById('event-id').value = "";
+        }
+
+        document.getElementById('events-grid').classList.add('hidden');
+        document.getElementById('event-editor').classList.remove('hidden');
+    }
+
+    document.getElementById('btn-new-event').addEventListener('click', () => openEventEditor());
+    document.getElementById('btn-cancel-event').addEventListener('click', () => {
+        document.getElementById('event-editor').classList.add('hidden');
+        document.getElementById('events-grid').classList.remove('hidden');
+    });
+
+    document.getElementById('event-photo-file').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const base64 = await compressImage(file);
+            document.getElementById('event-photo-preview').src = base64;
+            document.getElementById('event-photo-preview').classList.remove('hidden');
+        }
+    });
+
+    document.getElementById('form-event').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('event-id').value;
+        const newEvent = {
+            id: id ? parseInt(id) : Date.now(),
+            title: document.getElementById('event-title').value,
+            caption: document.getElementById('event-caption').value,
+            photo: document.getElementById('event-photo-preview').src
+        };
+
+        if (id) {
+            const index = allEvents.findIndex(x => x.id === parseInt(id));
+            if (index > -1) allEvents[index] = newEvent;
+        } else {
+            allEvents.push(newEvent);
+        }
+
+        localStorage.setItem('portfolio_events', JSON.stringify(allEvents));
+        showToast('Evento salvo!');
+        renderEvents();
+        document.getElementById('btn-cancel-event').click();
+    });
+
+    function deleteEvent(id) {
+        if (confirm('Deseja apagar este evento?')) {
+            allEvents = allEvents.filter(x => x.id !== id);
+            localStorage.setItem('portfolio_events', JSON.stringify(allEvents));
+            renderEvents();
+        }
     }
 
     // Definir Dados Atuais como Padrão
@@ -421,6 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 skills: localStorage.getItem('portfolio_skills'),
                 certifications: localStorage.getItem('portfolio_certifications'),
                 testimonials: localStorage.getItem('portfolio_testimonials'),
+                events: localStorage.getItem('portfolio_events'),
                 lastUpdated: Date.now()
             };
 
@@ -433,6 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     skills: ${snapshot.skills},
     certifications: ${snapshot.certifications},
     testimonials: ${snapshot.testimonials},
+    events: ${snapshot.events},
     lastUpdated: ${snapshot.lastUpdated}
 };
 
@@ -449,6 +631,7 @@ function initDatabase() {
         localStorage.setItem("portfolio_skills", JSON.stringify(defaultData.skills));
         localStorage.setItem("portfolio_certifications", JSON.stringify(defaultData.certifications));
         localStorage.setItem("portfolio_testimonials", JSON.stringify(defaultData.testimonials));
+        localStorage.setItem("portfolio_events", JSON.stringify(defaultData.events || []));
         localStorage.setItem("portfolio_last_updated", remoteLastUpdated);
         
         if (localLastUpdated !== "0") {

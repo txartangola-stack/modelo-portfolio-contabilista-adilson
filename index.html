@@ -53,6 +53,8 @@
                         class="text-slate-600 hover:text-brand-600 font-medium transition-colors">Experiência</a>
                     <a href="#competencias"
                         class="text-slate-600 hover:text-brand-600 font-medium transition-colors">Competências</a>
+                    <a href="#eventos"
+                        class="text-slate-600 hover:text-brand-600 font-medium transition-colors">Eventos</a>
                     <a href="#contacto"
                         class="text-slate-600 hover:text-brand-600 font-medium transition-colors">Contacto</a>
                 </nav>
@@ -230,15 +232,28 @@
         </div>
     </section>
 
-    <!-- Secção: Testemunhos -->
-    <section class="py-20 bg-slate-50">
+    <!-- Secção: Galeria de Eventos -->
+    <section id="eventos" class="py-20 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 fade-in">
-                <h3 class="text-brand-600 font-semibold tracking-wider uppercase text-sm mb-2">Feedback</h3>
-                <h2 class="text-3xl font-bold text-slate-900">O que os clientes dizem</h2>
+                <h3 class="text-brand-600 font-semibold tracking-wider uppercase text-sm mb-2">Trajetória</h3>
+                <h2 class="text-3xl font-bold text-slate-900">Eventos e Palestras</h2>
+                <p class="text-slate-500 mt-4 max-w-2xl mx-auto italic text-sm">Documentação fotográfica da participação ativa na comunidade académica e profissional.</p>
             </div>
-            <div id="testimonials-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 fade-in delay-100">
-                <!-- Testimonials injected -->
+            
+            <!-- Carousel Container -->
+            <div class="relative group">
+                <div id="events-carousel" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-6 pb-8 scroll-smooth">
+                    <!-- Events injected by JS -->
+                </div>
+                
+                <!-- Controls -->
+                <button id="prev-event" class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 hidden md:block border border-slate-200 ml-2">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </button>
+                <button id="next-event" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 hidden md:block border border-slate-200 mr-2">
+                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                </button>
             </div>
         </div>
     </section>

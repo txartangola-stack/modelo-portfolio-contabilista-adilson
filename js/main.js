@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const experiences = JSON.parse(localStorage.getItem('portfolio_experiences') || '[]');
     const skills = JSON.parse(localStorage.getItem('portfolio_skills') || '{"technical":[],"soft":[]}');
     const certifications = JSON.parse(localStorage.getItem('portfolio_certifications') || '[]');
-    const testimonials = JSON.parse(localStorage.getItem('portfolio_testimonials') || '[]');
+    const events = JSON.parse(localStorage.getItem('portfolio_events') || '[]');
 
     // 3. Populate Profile Data
     document.getElementById('nav-name').innerText = profile.name || 'Nome Profissional';
@@ -106,30 +106,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 7. Populate Skills
     const techSkillsList = document.getElementById('tech-skills-list');
-    techSkillsList.innerHTML = skills.technical.map(skill => `
-        <div>
-            <div class="flex justify-between mb-1">
-                <span class="font-medium text-slate-200">${skill.name}</span>
-                <span class="font-medium text-brand-300">${skill.level}%</span>
+    if (techSkillsList) {
+        techSkillsList.innerHTML = (skills.technical || []).map(skill => `
+            <div>
+                <div class="flex justify-between mb-1">
+                    <span class="font-medium text-slate-200">${skill.name}</span>
+                    <span class="font-medium text-brand-300">${skill.level}%</span>
+                </div>
+                <div class="w-full bg-brand-900 rounded-full h-2.5 bg-opacity-50">
+                    <div class="bg-brand-500 h-2.5 rounded-full skill-bar-fill transition-all duration-1000 ease-out" style="width: 0%;" data-target-width="${skill.level}%"></div>
+                </div>
             </div>
-            <div class="w-full bg-brand-900 rounded-full h-2.5 bg-opacity-50">
-                <div class="bg-brand-500 h-2.5 rounded-full skill-bar-fill" style="width: 0%;" data-target-width="${skill.level}%"></div>
-            </div>
-        </div>
-    `).join('');
+        `).join('');
+    }
 
     const softSkillsList = document.getElementById('soft-skills-list');
-    softSkillsList.innerHTML = skills.soft.map(skill => `
-        <div>
-            <div class="flex justify-between mb-1">
-                <span class="font-medium text-slate-200">${skill.name}</span>
-                <span class="font-medium text-finance-400">${skill.level}%</span>
+    if (softSkillsList) {
+        softSkillsList.innerHTML = (skills.soft || []).map(skill => `
+            <div>
+                <div class="flex justify-between mb-1">
+                    <span class="font-medium text-slate-200">${skill.name}</span>
+                    <span class="font-medium text-finance-400">${skill.level}%</span>
+                </div>
+                <div class="w-full bg-brand-900 rounded-full h-2.5 bg-opacity-50">
+                    <div class="bg-finance-500 h-2.5 rounded-full skill-bar-fill transition-all duration-1000 ease-out" style="width: 0%;" data-target-width="${skill.level}%"></div>
+                </div>
             </div>
-            <div class="w-full bg-brand-900 rounded-full h-2.5 bg-opacity-50">
-                <div class="bg-finance-500 h-2.5 rounded-full skill-bar-fill" style="width: 0%;" data-target-width="${skill.level}%"></div>
-            </div>
-        </div>
-    `).join('');
+        `).join('');
+    }
 
     // 8. Populate Certifications
     const certsList = document.getElementById('certifications-list');
@@ -137,18 +141,31 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="px-4 py-2 bg-white/10 text-white rounded border border-white/20 text-sm">${cert.name}</span>
     `).join('');
 
-    // 9. Populate Testimonials
-    const testGrid = document.getElementById('testimonials-grid');
-    testGrid.innerHTML = testimonials.map(test => `
-        <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 relative">
-            <i data-lucide="quote" class="w-10 h-10 text-slate-200 absolute top-6 right-6"></i>
-            <p class="text-slate-600 italic mb-6 relative z-10">"${test.text}"</p>
-            <div>
-                <h4 class="font-bold text-slate-900">${test.name}</h4>
-                <div class="text-sm text-brand-600">${test.role}</div>
+    // 9. Populate Events Gallery
+    const eventsCarousel = document.getElementById('events-carousel');
+    if (eventsCarousel) {
+        eventsCarousel.innerHTML = events.map((ev, index) => `
+            <div class="min-w-[300px] md:min-w-[400px] snap-start bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 group lightbox-trigger cursor-pointer" data-img="${ev.photo || ''}" data-caption="${ev.caption || ''}">
+                <div class="aspect-video relative overflow-hidden">
+                    <img src="${ev.photo || ''}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${ev.title}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                         <div>
+                            <h4 class="text-white font-bold text-lg">${ev.title}</h4>
+                            <p class="text-white/80 text-xs mt-1 line-clamp-1">${ev.caption}</p>
+                         </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+
+        // Carousel Controls
+        const prevBtn = document.getElementById('prev-event');
+        const nextBtn = document.getElementById('next-event');
+        if (prevBtn && nextBtn) {
+            prevBtn.onclick = () => eventsCarousel.scrollBy({ left: -400, behavior: 'smooth' });
+            nextBtn.onclick = () => eventsCarousel.scrollBy({ left: 400, behavior: 'smooth' });
+        }
+    }
 
     // Update lucide icons for dynamically added content
     if(window.lucide) { window.lucide.createIcons(); }

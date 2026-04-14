@@ -111,3 +111,12 @@ body {
     max-height: 80vh;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
+
+/* Carousel No-Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}

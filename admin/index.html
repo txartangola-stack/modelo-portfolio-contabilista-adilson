@@ -74,6 +74,7 @@
                     <li><button data-target="tab-experience" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="clock" class="w-5 h-5 mr-3"></i> Experiência</button></li>
                     <li><button data-target="tab-education" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="graduation-cap" class="w-5 h-5 mr-3"></i> Formações</button></li>
                     <li><button data-target="tab-skills" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="bar-chart" class="w-5 h-5 mr-3"></i> Competências</button></li>
+                    <li><button data-target="tab-events" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="camera" class="w-5 h-5 mr-3"></i> Eventos e Palestras</button></li>
                     <li><button data-target="tab-settings" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="settings" class="w-5 h-5 mr-3"></i> Sistema</button></li>
                 </ul>
             </nav>
@@ -193,17 +194,74 @@
 
                 <!-- Tab: Skills -->
                 <div id="tab-skills" class="tab-content bg-white p-6 rounded-lg shadow-sm">
-                    <h3 class="font-semibold text-lg mb-4">Competências</h3>
-                    <div class="text-sm text-slate-500 mb-4">Gerencie níveis de 0 a 100 via localStorage. Aqui está um sumário:</div>
-                    <div class="grid grid-cols-2 gap-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold text-lg text-indigo-600">Gestão de Competências</h3>
+                        <div class="flex gap-2">
+                             <input type="text" id="skill-name" placeholder="Nome da competência" class="border rounded px-3 py-1 text-sm">
+                             <select id="skill-type" class="border rounded px-3 py-1 text-sm">
+                                 <option value="technical">Técnica</option>
+                                 <option value="soft">Interpessoal</option>
+                             </select>
+                             <input type="number" id="skill-level" placeholder="Nível (0-100)" class="border rounded px-3 py-1 text-sm w-24">
+                             <button id="btn-add-skill" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> ADICIONAR</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
-                            <h4 class="font-medium text-slate-800 mb-2 border-b pb-1">Técnicas</h4>
-                            <ul id="skills-tech-ul" class="list-disc pl-5 space-y-1 text-sm"></ul>
+                            <h4 class="font-medium text-slate-800 mb-4 flex items-center"><i data-lucide="settings" class="w-4 h-4 mr-2 text-indigo-500"></i> Técnicas</h4>
+                            <div id="skills-tech-list" class="space-y-2">
+                                <!-- Injected -->
+                            </div>
                         </div>
                         <div>
-                            <h4 class="font-medium text-slate-800 mb-2 border-b pb-1">Interpessoais</h4>
-                            <ul id="skills-soft-ul" class="list-disc pl-5 space-y-1 text-sm"></ul>
+                            <h4 class="font-medium text-slate-800 mb-4 flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2 text-indigo-500"></i> Interpessoais (Soft Skills)</h4>
+                            <div id="skills-soft-list" class="space-y-2">
+                                <!-- Injected -->
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Eventos -->
+                <div id="tab-events" class="tab-content bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold text-lg text-emerald-600">Eventos e Palestras</h3>
+                        <button id="btn-new-event" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> NOVO EVENTO</button>
+                    </div>
+                    
+                    <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Injected -->
+                    </div>
+
+                    <!-- Editor de Eventos -->
+                    <div id="event-editor" class="hidden border-t border-slate-200 pt-6 mt-6">
+                        <h4 class="font-semibold text-md mb-4 text-emerald-600 flex items-center"><i data-lucide="edit-3" class="w-5 h-5 mr-2"></i>Gerenciar Evento</h4>
+                        <form id="form-event">
+                            <input type="hidden" id="event-id">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium mb-1">Título do Evento</label>
+                                    <input type="text" id="event-title" class="w-full border rounded p-2" required>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium mb-1">Legenda / Resumo</label>
+                                    <textarea id="event-caption" rows="2" class="w-full border rounded p-2" required></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium mb-1">Foto do Evento</label>
+                                    <div class="flex items-center gap-4">
+                                        <img id="event-photo-preview" src="" class="w-20 h-20 rounded bg-slate-100 object-cover hidden border">
+                                        <input type="file" id="event-photo-file" accept="image/*" class="text-sm">
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1">Esta foto será exibida no carrossel do site principal.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded">Salvar Evento</button>
+                                <button type="button" id="btn-cancel-event" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded">Cancelar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 
