@@ -1,24 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
-    
+
     // --- AUTHENTICATION ---
     const loginModal = document.getElementById('login-modal');
     const dashboard = document.getElementById('dashboard');
     const loginForm = document.getElementById('login-form');
     const errorMsg = document.getElementById('login-error');
-    
+
     // Check session
-    if(sessionStorage.getItem('admin_logged_in') === 'true') {
+    if (sessionStorage.getItem('admin_logged_in') === 'true') {
         loginModal.classList.add('hidden');
         dashboard.classList.remove('hidden');
         loadAllData();
     }
-    
+
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const u = document.getElementById('login-user').value;
         const p = document.getElementById('login-pass').value;
-        if(u === 'admin' && p === 'admin') {
+        if (u === 'admin' && p === 'Fula.2026#') {
             sessionStorage.setItem('admin_logged_in', 'true');
             loginModal.classList.add('hidden');
             dashboard.classList.remove('hidden');
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             errorMsg.classList.remove('hidden');
         }
     });
-    
+
     document.getElementById('logout-btn').addEventListener('click', () => {
         sessionStorage.removeItem('admin_logged_in');
         window.location.reload();
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     const titleEl = document.getElementById('current-tab-title');
-    
+
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             // Reset active states
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 b.classList.add('text-slate-300');
             });
             tabContents.forEach(c => c.classList.remove('active'));
-            
+
             // Set active
             btn.classList.remove('text-slate-300');
             btn.classList.add('bg-blue-600', 'text-white');
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- TOAST NOTIFICATION ---
     function showToast(msg) {
         const toast = document.getElementById('toast');
-        if(msg) toast.innerText = msg;
+        if (msg) toast.innerText = msg;
         toast.className = "toast show";
         setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
@@ -93,11 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LOAD AND BIND DATA ---
     let profileData = {};
-    
+
     function loadAllData() {
         // Garantir que existe info
-        if(!localStorage.getItem("portfolio_profile") && window.initDatabase) window.initDatabase();
-        
+        if (!localStorage.getItem("portfolio_profile") && window.initDatabase) window.initDatabase();
+
         loadProfile();
         loadServices();
         loadExperience();
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadSkills();
         loadGithubSettings();
     }
-    
+
     function loadProfile() {
         profileData = JSON.parse(localStorage.getItem('portfolio_profile') || '{}');
         document.getElementById('prof-name').value = profileData.name || '';
@@ -118,18 +118,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('prof-phone').value = profileData.phone || '';
         document.getElementById('prof-loc').value = profileData.location || '';
         document.getElementById('prof-link').value = profileData.linkedin || '';
-        
-        if(profileData.photo) {
+
+        if (profileData.photo) {
             document.getElementById('prof-photo-preview').src = profileData.photo;
             document.getElementById('prof-photo-preview').classList.remove('hidden');
         }
     }
-    
+
     // Converter foto e comprimir
-    document.getElementById('prof-photo').addEventListener('change', async function(e) {
+    document.getElementById('prof-photo').addEventListener('change', async function (e) {
         const file = e.target.files[0];
-        if(!file) return;
-        
+        if (!file) return;
+
         // Mostrar estado de processamento
         showToast('Processando imagem...');
         try {
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Remover Foto
     document.getElementById('btn-remove-photo').addEventListener('click', () => {
-        if(confirm('Deseja remover a foto de perfil?')) {
+        if (confirm('Deseja remover a foto de perfil?')) {
             profileData.photo = "";
             document.getElementById('prof-photo-preview').src = "";
             document.getElementById('prof-photo-preview').classList.add('hidden');
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         profileData.phone = document.getElementById('prof-phone').value;
         profileData.location = document.getElementById('prof-loc').value;
         profileData.linkedin = document.getElementById('prof-link').value;
-        
+
         localStorage.setItem('portfolio_profile', JSON.stringify(profileData));
         showToast('Perfil atualizado com sucesso!');
     });
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tbody.innerHTML = serv.map(s => `
             <tr class="border-b border-slate-100 hover:bg-slate-50">
                 <td class="p-3 align-top font-medium">${s.title}</td>
-                <td class="p-3 align-top text-slate-500 line-clamp-2" title="${s.description}">${s.description.substring(0,80)}...</td>
+                <td class="p-3 align-top text-slate-500 line-clamp-2" title="${s.description}">${s.description.substring(0, 80)}...</td>
                 <td class="p-3 align-top text-center space-x-2">
                     <button class="text-blue-500 hover:text-blue-700" title="Função ilustrativa"><i data-lucide="edit-2" class="w-4 h-4 inline"></i></button>
                     <button class="text-red-500 hover:text-red-700" title="Função ilustrativa"><i data-lucide="trash-2" class="w-4 h-4 inline"></i></button>
@@ -223,14 +223,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function openExpEditor(id) {
         editingExpId = id;
         const exp = allExperiences.find(x => x.id === id);
-        if(!exp) return;
-        
+        if (!exp) return;
+
         document.getElementById('exp-id').value = exp.id;
         document.getElementById('exp-role').value = exp.role;
         document.getElementById('exp-company').value = exp.company;
         document.getElementById('exp-period').value = exp.period;
         document.getElementById('exp-desc').value = exp.description;
-        
+
         currentExpGallery = exp.gallery ? [...exp.gallery] : [];
         renderExpGallery();
 
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const id = parseInt(document.getElementById('exp-id').value);
         const index = allExperiences.findIndex(x => x.id === id);
-        if(index > -1) {
+        if (index > -1) {
             allExperiences[index] = {
                 id: id,
                 role: document.getElementById('exp-role').value,
@@ -270,18 +270,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gallery Logic
     let tempGalleryBase64 = null;
-    document.getElementById('exp-gallery-upload').addEventListener('change', function(e) {
+    document.getElementById('exp-gallery-upload').addEventListener('change', function (e) {
         const file = e.target.files[0];
-        if(!file) return;
+        if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             tempGalleryBase64 = event.target.result;
         };
         reader.readAsDataURL(file);
     });
 
     document.getElementById('btn-add-gallery').addEventListener('click', () => {
-        if(!tempGalleryBase64) {
+        if (!tempGalleryBase64) {
             alert('Por favor, selecione uma imagem primeiro.');
             return;
         }
@@ -290,12 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
             imgBase64: tempGalleryBase64,
             caption: caption
         });
-        
+
         // Reset inputs
         tempGalleryBase64 = null;
         document.getElementById('exp-gallery-upload').value = '';
         document.getElementById('exp-gallery-caption').value = '';
-        
+
         renderExpGallery();
     });
 
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    
+
     function loadEducation() {
         const edu = JSON.parse(localStorage.getItem('portfolio_educations') || '[]');
         document.getElementById('edu-list').innerHTML = edu.map(e => `
@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-sync-github').addEventListener('click', async () => {
         const settings = JSON.parse(localStorage.getItem('portfolio_github_settings') || '{}');
         const statusEl = document.getElementById('sync-status');
-        
+
         if (!settings.user || !settings.repo || !settings.token) {
             alert('Por favor, configure o Utilizador, Repositório e Token primeiro.');
             return;
