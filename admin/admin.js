@@ -210,7 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="text-sm text-slate-500">${e.company} | ${e.period}</div>
                     ${e.gallery && e.gallery.length > 0 ? `<div class="text-xs mt-1 text-emerald-600 flex items-center"><i data-lucide="image" class="w-3 h-3 mr-1"></i> ${e.gallery.length} foto(s) na galeria</div>` : ''}
                 </div>
-                <button type="button" class="text-slate-400 hover:text-blue-500 transition-colors btn-edit-exp" data-id="${e.id}"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                <div class="flex gap-2">
+                    <button type="button" class="text-slate-400 hover:text-blue-500 transition-colors btn-edit-exp" data-id="${e.id}"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                    <button type="button" class="text-slate-300 hover:text-red-500 transition-colors btn-del-exp" data-id="${e.id}"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </div>
             </div>
         `).join('');
         lucide.createIcons();
@@ -221,25 +224,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 openExpEditor(id);
             });
         });
+
+        document.querySelectorAll('.btn-del-exp').forEach(btn => {
+            btn.addEventListener('click', (ev) => {
+                const id = parseInt(ev.currentTarget.getAttribute('data-id'));
+                deleteExperience(id);
+            });
+        });
     }
 
-    function openExpEditor(id) {
+    function openExpEditor(id = null) {
         editingExpId = id;
-        const exp = allExperiences.find(x => x.id === id);
-        if (!exp) return;
+        document.getElementById('form-exp').reset();
+        
+        if (id) {
+            const exp = allExperiences.find(x => x.id === id);
+            if (!exp) return;
+            document.getElementById('exp-id').value = exp.id;
+            document.getElementById('exp-role').value = exp.role;
+            document.getElementById('exp-company').value = exp.company;
+            document.getElementById('exp-period').value = exp.period;
+            document.getElementById('exp-desc').value = exp.description;
+            currentExpGallery = exp.gallery ? [...exp.gallery] : [];
+        } else {
+            document.getElementById('exp-id').value = "";
+            currentExpGallery = [];
+        }
 
-        document.getElementById('exp-id').value = exp.id;
-        document.getElementById('exp-role').value = exp.role;
-        document.getElementById('exp-company').value = exp.company;
-        document.getElementById('exp-period').value = exp.period;
-        document.getElementById('exp-desc').value = exp.description;
-
-        currentExpGallery = exp.gallery ? [...exp.gallery] : [];
         renderExpGallery();
-
         document.getElementById('exp-list').classList.add('hidden');
         document.getElementById('exp-editor').classList.remove('hidden');
     }
+
+    document.getElementById('btn-new-exp').addEventListener('click', () => openExpEditor());
 
     function closeExpEditor() {
         editingExpId = null;
@@ -253,23 +270,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('form-exp').addEventListener('submit', (e) => {
         e.preventDefault();
-        const id = parseInt(document.getElementById('exp-id').value);
-        const index = allExperiences.findIndex(x => x.id === id);
-        if (index > -1) {
-            allExperiences[index] = {
-                id: id,
-                role: document.getElementById('exp-role').value,
-                company: document.getElementById('exp-company').value,
-                period: document.getElementById('exp-period').value,
-                description: document.getElementById('exp-desc').value,
-                gallery: currentExpGallery
-            };
-            localStorage.setItem('portfolio_experiences', JSON.stringify(allExperiences));
-            showToast('Experiência salva com sucesso!');
-            renderExperienceList();
-            closeExpEditor();
+        const id = document.getElementById('exp-id').value;
+        const newExp = {
+            id: id ? parseInt(id) : Date.now(),
+            role: document.getElementById('exp-role').value,
+            company: document.getElementById('exp-company').value,
+            period: document.getElementById('exp-period').value,
+            description: document.getElementById('exp-desc').value,
+            gallery: currentExpGallery
+        };
+
+        if (id) {
+            const index = allExperiences.findIndex(x => x.id === parseInt(id));
+            if (index > -1) allExperiences[index] = newExp;
+        } else {
+            allExperiences.push(newExp);
         }
+
+        localStorage.setItem('portfolio_experiences', JSON.stringify(allExperiences));
+        showToast('Experiência salva com sucesso!');
+        renderExperienceList();
+        closeExpEditor();
     });
+
+    function deleteExperience(id) {
+        if (confirm('Deseja apagar esta experiência?')) {
+            allExperiences = allExperiences.filter(x => x.id !== id);
+            localStorage.setItem('portfolio_experiences', JSON.stringify(allExperiences));
+            renderExperienceList();
+        }
+    }
 
     // Gallery Logic
     let tempGalleryBase64 = null;
@@ -325,18 +355,118 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- EDUCATION LOGIC ---
+    // --- EDUCATION LOGIC ---
+    let allEducations = [];
+
     function loadEducation() {
-        const edu = JSON.parse(localStorage.getItem('portfolio_educations') || '[]');
+        const stored = localStorage.getItem('portfolio_educations');
+        allEducations = stored ? JSON.parse(stored) : [];
+        renderEducationList();
+    }
+
+    function renderEducationList() {
         const listEl = document.getElementById('edu-list');
         if (!listEl) return;
-        listEl.innerHTML = edu.map(e => `
-            <div class="border border-slate-200 p-4 rounded bg-slate-50 flex justify-between">
-                <div><div class="font-medium">${e.course}</div><div class="text-sm text-slate-500">${e.institution} | ${e.year}</div></div>
-                <button class="text-slate-400 hover:text-blue-500"><i data-lucide="edit" class="w-5 h-5"></i></button>
-            </div>
-        `).join('');
+        
+        if (allEducations.length === 0) {
+            listEl.innerHTML = '<div class="text-slate-400 text-center py-4 italic">Nenhuma formação registada.</div>';
+        } else {
+            listEl.innerHTML = allEducations.map(e => `
+                <div class="border border-slate-200 p-4 rounded bg-slate-50 flex justify-between items-center group hover:border-indigo-300">
+                    <div>
+                        <div class="font-medium text-slate-800">${e.course}</div>
+                        <div class="text-sm text-slate-500">${e.institution} | ${e.year}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="text-slate-400 hover:text-indigo-500 transition-colors btn-edit-edu" data-id="${e.id}"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                        <button type="button" class="text-slate-300 hover:text-red-500 transition-colors btn-del-edu" data-id="${e.id}"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
         lucide.createIcons();
+
+        document.querySelectorAll('.btn-edit-edu').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                openEduEditor(id);
+            });
+        });
+
+        document.querySelectorAll('.btn-del-edu').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                deleteEducation(id);
+            });
+        });
     }
+
+    function openEduEditor(id = null) {
+        document.getElementById('form-edu').reset();
+        const idField = document.getElementById('edu-id');
+        
+        if (id) {
+            const edu = allEducations.find(x => x.id.toString() === id.toString());
+            if (edu) {
+                idField.value = edu.id;
+                document.getElementById('edu-course').value = edu.course;
+                document.getElementById('edu-institution').value = edu.institution;
+                document.getElementById('edu-year').value = edu.year;
+            }
+        } else {
+            idField.value = "";
+        }
+
+        document.getElementById('edu-list').classList.add('hidden');
+        document.getElementById('edu-editor').classList.remove('hidden');
+    }
+
+    function closeEduEditor() {
+        document.getElementById('edu-list').classList.remove('hidden');
+        document.getElementById('edu-editor').classList.add('hidden');
+    }
+
+    document.getElementById('btn-new-edu').addEventListener('click', () => openEduEditor());
+    document.getElementById('btn-cancel-edu').addEventListener('click', closeEduEditor);
+
+    document.getElementById('form-edu').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edu-id').value;
+        const newEdu = {
+            id: id ? (isNaN(id) ? id : parseInt(id)) : Date.now(),
+            course: document.getElementById('edu-course').value,
+            institution: document.getElementById('edu-institution').value,
+            year: document.getElementById('edu-year').value
+        };
+
+        if (id) {
+            const index = allEducations.findIndex(x => x.id.toString() === id.toString());
+            if (index > -1) {
+                allEducations[index] = newEdu;
+            } else {
+                allEducations.push(newEdu);
+            }
+        } else {
+            allEducations.push(newEdu);
+        }
+
+        localStorage.setItem('portfolio_educations', JSON.stringify(allEducations));
+        showToast('Formação salva com sucesso!');
+        renderEducationList();
+        closeEduEditor();
+    });
+
+    function deleteEducation(id) {
+        if (confirm('Deseja apagar esta formação?')) {
+            allEducations = allEducations.filter(x => x.id.toString() !== id.toString());
+            localStorage.setItem('portfolio_educations', JSON.stringify(allEducations));
+            renderEducationList();
+            showToast('Formação eliminada!');
+        }
+    }
+
 
     // --- SKILLS LOGIC ---
     let allSkills = { technical: [], soft: [] };

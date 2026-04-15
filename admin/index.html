@@ -146,7 +146,10 @@
 
                 <!-- Tab: Experience -->
                 <div id="tab-experience" class="tab-content bg-white p-6 rounded-lg shadow-sm">
-                    <h3 class="font-semibold text-lg mb-4">Experiência Profissional</h3>
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold text-lg">Experiência Profissional</h3>
+                        <button id="btn-new-exp" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> NOVA EXPERIÊNCIA</button>
+                    </div>
                     <div id="exp-list" class="space-y-4 mb-6">
                         <!-- Injected -->
                     </div>
@@ -186,9 +189,29 @@
 
                 <!-- Tab: Education -->
                 <div id="tab-education" class="tab-content bg-white p-6 rounded-lg shadow-sm">
-                    <h3 class="font-semibold text-lg mb-4">Formação Académica</h3>
-                    <div id="edu-list" class="space-y-4">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold text-lg">Formação Académica</h3>
+                        <button id="btn-new-edu" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> NOVA FORMAÇÃO</button>
+                    </div>
+                    <div id="edu-list" class="space-y-4 mb-6">
                         <!-- Injected -->
+                    </div>
+
+                    <!-- Editor de Formação (Oculto por defeito) -->
+                    <div id="edu-editor" class="hidden border-t border-slate-200 pt-6 mt-6">
+                        <h4 class="font-semibold text-md mb-4 text-indigo-600 flex items-center"><i data-lucide="graduation-cap" class="w-5 h-5 mr-2"></i>Gerenciar Formação</h4>
+                        <form id="form-edu">
+                            <input type="hidden" id="edu-id">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Curso / Certificação</label><input type="text" id="edu-course" class="w-full border rounded p-2" required></div>
+                                <div><label class="block text-sm font-medium mb-1">Instituição</label><input type="text" id="edu-institution" class="w-full border rounded p-2" required></div>
+                                <div><label class="block text-sm font-medium mb-1">Ano / Período</label><input type="text" id="edu-year" class="w-full border rounded p-2" required placeholder="ex: 2020 - 2024"></div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded">Salvar Formação</button>
+                                <button type="button" id="btn-cancel-edu" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded">Cancelar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
