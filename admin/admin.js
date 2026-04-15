@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
+    if (window.lucide) window.lucide.createIcons();
 
     // --- AUTHENTICATION ---
     const loginModal = document.getElementById('login-modal');
@@ -96,7 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadAllData() {
         // Garantir que existe info
-        if (window.initDatabase) window.initDatabase();
+        if (typeof window.initDatabase === 'function') {
+            window.initDatabase();
+        }
 
         loadProfile();
         loadServices();
@@ -385,8 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
         }
-        
-        lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
 
         document.querySelectorAll('.btn-edit-edu').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -428,8 +429,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('edu-editor').classList.add('hidden');
     }
 
-    document.getElementById('btn-new-edu').addEventListener('click', () => openEduEditor());
-    document.getElementById('btn-cancel-edu').addEventListener('click', closeEduEditor);
+    if (document.getElementById('btn-new-edu')) {
+        document.getElementById('btn-new-edu').addEventListener('click', () => openEduEditor());
+    }
+    if (document.getElementById('btn-cancel-edu')) {
+        document.getElementById('btn-cancel-edu').addEventListener('click', closeEduEditor);
+    }
 
     document.getElementById('form-edu').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -495,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         techList.innerHTML = allSkills.technical.map(s => renderItem(s, 'technical')).join('');
         softList.innerHTML = allSkills.soft.map(s => renderItem(s, 'soft')).join('');
-        lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
 
         document.querySelectorAll('.btn-del-skill').forEach(btn => {
             btn.addEventListener('click', (e) => {
