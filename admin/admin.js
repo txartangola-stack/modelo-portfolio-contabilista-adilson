@@ -63,6 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
+    // --- HELPER: FILE TO BASE64 ---
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
     // --- HELPER: IMAGE COMPRESSION ---
     function compressImage(file, maxWidth = 800) {
         return new Promise((resolve) => {
@@ -126,6 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('prof-photo-preview').src = profileData.photo;
             document.getElementById('prof-photo-preview').classList.remove('hidden');
         }
+
+        const cvStatus = document.getElementById('prof-cv-status');
+        if (profileData.cv) {
+            cvStatus.innerText = "✅ PDF Carregado";
+            cvStatus.className = "text-xs font-medium px-2 py-1 rounded bg-emerald-100 text-emerald-700";
+        } else {
+            cvStatus.innerText = "Nenhum PDF carregado";
+            cvStatus.className = "text-xs font-medium px-2 py-1 rounded bg-slate-100 text-slate-500";
+        }
     }
 
     // Converter foto e comprimir
@@ -144,6 +163,33 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error(err);
             alert('Erro ao processar imagem.');
+        }
+    });
+
+    // Upload de Currículo PDF
+    document.getElementById('prof-cv').addEventListener('change', async function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.type !== 'application/pdf') {
+            alert('Por favor, carregue um ficheiro PDF.');
+            e.target.value = '';
+            return;
+        }
+
+        showToast('A processar currículo...');
+        try {
+            const base64 = await fileToBase64(file);
+            profileData.cv = base64;
+            
+            const cvStatus = document.getElementById('prof-cv-status');
+            cvStatus.innerText = "✅ PDF Carregado";
+            cvStatus.className = "text-xs font-medium px-2 py-1 rounded bg-emerald-100 text-emerald-700";
+            
+            showToast('Currículo pronto!');
+        } catch (err) {
+            console.error(err);
+            alert('Erro ao processar PDF.');
         }
     });
 
@@ -562,7 +608,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="p-4">
                     <h5 class="font-bold text-slate-800 truncate">${ev.title}</h5>
-                    <p class="text-xs text-slate-500 line-clamp-2 mt-1">${ev.caption}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">${ev.date || 'S/ Data'}</span>
+                    </div>
+                    <p class="text-xs text-slate-500 line-clamp-2 mt-2">${ev.caption}</p>
                 </div>
             </div>
         `).join('');
@@ -594,6 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('event-id').value = ev.id;
                 document.getElementById('event-title').value = ev.title;
                 document.getElementById('event-caption').value = ev.caption;
+                document.getElementById('event-date').value = ev.date || "";
                 if (ev.photo) {
                     document.getElementById('event-photo-preview').src = ev.photo;
                     document.getElementById('event-photo-preview').classList.remove('hidden');
@@ -629,6 +679,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: id ? parseInt(id) : Date.now(),
             title: document.getElementById('event-title').value,
             caption: document.getElementById('event-caption').value,
+            date: document.getElementById('event-date').value,
             photo: document.getElementById('event-photo-preview').src
         };
 
@@ -640,16 +691,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         localStorage.setItem('portfolio_events', JSON.stringify(allEvents));
-        showToast('Evento salvo!');
+        showToast('Actividade salva!');
         renderEvents();
         document.getElementById('btn-cancel-event').click();
     });
 
     function deleteEvent(id) {
-        if (confirm('Deseja apagar este evento?')) {
+        if (confirm('Deseja apagar esta actividade?')) {
             allEvents = allEvents.filter(x => x.id !== id);
             localStorage.setItem('portfolio_events', JSON.stringify(allEvents));
             renderEvents();
+            showToast('Actividade removida');
         }
     }
 

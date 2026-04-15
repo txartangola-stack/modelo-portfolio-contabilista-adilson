@@ -45,6 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
         fallbackEl.classList.add('hidden');
     }
 
+    // Curriculum Vitae (PDF)
+    const cvDownloadBtn = document.getElementById('btn-download-cv');
+    if (cvDownloadBtn && profile.cv) {
+        cvDownloadBtn.href = profile.cv;
+        cvDownloadBtn.download = `Curriculo_${(profile.name || 'Adilson_Quiano').replace(/\s+/g, '_')}.pdf`;
+    }
+
     // 4. Populate Services
     const servicesGrid = document.getElementById('services-grid');
     servicesGrid.innerHTML = services.map((s, index) => `
@@ -149,10 +156,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="aspect-video relative overflow-hidden">
                     <img src="${ev.photo || ''}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${ev.title}">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                         <div>
+                        <div>
+                            <span class="text-[10px] bg-brand-500 text-white px-2 py-0.5 rounded-full font-bold uppercase mb-2 inline-block">${ev.date || 'S/ Data'}</span>
                             <h4 class="text-white font-bold text-lg">${ev.title}</h4>
                             <p class="text-white/80 text-xs mt-1 line-clamp-1">${ev.caption}</p>
-                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
