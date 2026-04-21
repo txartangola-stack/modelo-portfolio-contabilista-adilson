@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadEducation();
         loadSkills();
         loadEvents();
+        loadCertifications();
         loadGithubSettings();
     }
 
@@ -702,6 +703,122 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('portfolio_events', JSON.stringify(allEvents));
             renderEvents();
             showToast('Actividade removida');
+        }
+    }
+
+    // --- CERTIFICATIONS LOGIC ---
+    let allCertifications = [];
+
+    function loadCertifications() {
+        const stored = localStorage.getItem('portfolio_certifications');
+        allCertifications = stored ? JSON.parse(stored) : [];
+        renderCertificationsList();
+    }
+
+    function renderCertificationsList() {
+        const listEl = document.getElementById('certifications-list');
+        if (!listEl) return;
+        
+        if (allCertifications.length === 0) {
+            listEl.innerHTML = '<div class="text-slate-400 text-center py-4 italic">Nenhuma certificação registada.</div>';
+        } else {
+            listEl.innerHTML = allCertifications.map(c => `
+                <div class="border border-slate-200 p-4 rounded bg-slate-50 flex justify-between items-center group hover:border-finance-300">
+                    <div>
+                        <div class="font-medium text-slate-800">${c.name}</div>
+                        <div class="text-sm text-slate-500">${c.institution} | ${c.year}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="text-slate-400 hover:text-finance-500 transition-colors btn-edit-cert" data-id="${c.id || c.name}"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                        <button type="button" class="text-slate-300 hover:text-red-500 transition-colors btn-del-cert" data-id="${c.id || c.name}"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        if (window.lucide) window.lucide.createIcons();
+
+        document.querySelectorAll('.btn-edit-cert').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                openCertEditor(id);
+            });
+        });
+
+        document.querySelectorAll('.btn-del-cert').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                deleteCertification(id);
+            });
+        });
+    }
+
+    function openCertEditor(id = null) {
+        document.getElementById('form-cert').reset();
+        const idField = document.getElementById('cert-id');
+        
+        if (id) {
+            const cert = allCertifications.find(x => (x.id && x.id.toString() === id.toString()) || x.name === id);
+            if (cert) {
+                idField.value = cert.id || cert.name;
+                document.getElementById('cert-name').value = cert.name;
+                document.getElementById('cert-institution').value = cert.institution;
+                document.getElementById('cert-year').value = cert.year;
+            }
+        } else {
+            idField.value = "";
+        }
+
+        document.getElementById('certifications-list').classList.add('hidden');
+        document.getElementById('cert-editor').classList.remove('hidden');
+    }
+
+    function closeCertEditor() {
+        document.getElementById('certifications-list').classList.remove('hidden');
+        document.getElementById('cert-editor').classList.add('hidden');
+    }
+
+    if (document.getElementById('btn-new-cert')) {
+        document.getElementById('btn-new-cert').addEventListener('click', () => openCertEditor());
+    }
+    if (document.getElementById('btn-cancel-cert')) {
+        document.getElementById('btn-cancel-cert').addEventListener('click', closeCertEditor);
+    }
+
+    if (document.getElementById('form-cert')) {
+        document.getElementById('form-cert').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('cert-id').value;
+            const newCert = {
+                id: id && !isNaN(id) ? parseInt(id) : Date.now(),
+                name: document.getElementById('cert-name').value,
+                institution: document.getElementById('cert-institution').value,
+                year: document.getElementById('cert-year').value
+            };
+
+            if (id) {
+                const index = allCertifications.findIndex(x => (x.id && x.id.toString() === id.toString()) || x.name === id);
+                if (index > -1) {
+                    allCertifications[index] = newCert;
+                } else {
+                    allCertifications.push(newCert);
+                }
+            } else {
+                allCertifications.push(newCert);
+            }
+
+            localStorage.setItem('portfolio_certifications', JSON.stringify(allCertifications));
+            showToast('Certificação salva com sucesso!');
+            renderCertificationsList();
+            closeCertEditor();
+        });
+    }
+
+    function deleteCertification(id) {
+        if (confirm('Deseja apagar esta certificação?')) {
+            allCertifications = allCertifications.filter(x => (x.id && x.id.toString() !== id.toString()) && x.name !== id);
+            localStorage.setItem('portfolio_certifications', JSON.stringify(allCertifications));
+            renderCertificationsList();
+            showToast('Certificação eliminada!');
         }
     }
 

@@ -75,6 +75,7 @@
                     <li><button data-target="tab-education" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="graduation-cap" class="w-5 h-5 mr-3"></i> Formações</button></li>
                     <li><button data-target="tab-skills" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="bar-chart" class="w-5 h-5 mr-3"></i> Competências</button></li>
                     <li><button data-target="tab-events" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="camera" class="w-5 h-5 mr-3"></i> Actividade Extra Curriculares</button></li>
+                    <li><button data-target="tab-certifications" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="award" class="w-5 h-5 mr-3"></i> Certificações</button></li>
                     <li><button data-target="tab-settings" class="w-full flex items-center px-4 py-3 rounded-lg text-left text-slate-300 hover:bg-slate-800 transition-colors tab-btn"><i data-lucide="settings" class="w-5 h-5 mr-3"></i> Sistema</button></li>
                 </ul>
             </nav>
@@ -298,6 +299,43 @@
                             <div class="flex gap-2">
                                 <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded">Salvar Actividade</button>
                                 <button type="button" id="btn-cancel-event" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Tab: Certificações -->
+                <div id="tab-certifications" class="tab-content bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold text-lg text-finance-600 flex items-center"><i data-lucide="award" class="w-5 h-5 mr-2 text-finance-500"></i> Certificações e Membro</h3>
+                        <button id="btn-new-cert" class="bg-finance-600 hover:bg-finance-700 text-white px-3 py-1.5 rounded text-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> NOVA CERTIFICAÇÃO</button>
+                    </div>
+                    <div id="certifications-list" class="space-y-4 mb-6">
+                        <!-- Injected -->
+                    </div>
+
+                    <!-- Editor de Certificação -->
+                    <div id="cert-editor" class="hidden border-t border-slate-200 pt-6 mt-6">
+                        <h4 class="font-semibold text-md mb-4 text-finance-600 flex items-center"><i data-lucide="award" class="w-5 h-5 mr-2"></i>Gerenciar Certificação</h4>
+                        <form id="form-cert">
+                            <input type="hidden" id="cert-id">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium mb-1">Nome da Certificação / Título</label>
+                                    <input type="text" id="cert-name" class="w-full border rounded p-2" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Instituição / Entidade</label>
+                                    <input type="text" id="cert-institution" class="w-full border rounded p-2" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Ano</label>
+                                    <input type="text" id="cert-year" class="w-full border rounded p-2" required placeholder="ex: 2023">
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" class="bg-finance-600 hover:bg-finance-700 md:bg-emerald-600 md:hover:bg-emerald-700 text-white px-6 py-2 rounded">Salvar Certificação</button>
+                                <button type="button" id="btn-cancel-cert" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded">Cancelar</button>
                             </div>
                         </form>
                     </div>
